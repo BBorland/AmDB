@@ -2,7 +2,6 @@ import sqlite3
 import tkinter as tk
 import io
 import os
-import protected as protected
 from PIL import Image, ImageTk
 from tkinter import messagebox
 import tkinter.filedialog
@@ -22,7 +21,7 @@ class AmDB(tk.Tk):
         self.grid_rowconfigure(0, weight=0)
         self.grid_rowconfigure(1, weight=1)
         self.grid_rowconfigure(2, weight=0)
-        #self.newData()
+        # self.newData()
         self.data = self.getData()
         self.creatingBoxes()
         self.creatingButtons()
@@ -101,6 +100,7 @@ class AmDB(tk.Tk):
         change_window = None
         find_window = None
         show_window = None
+
         def show_popup_fond(event):
             popup_fond.post(event.x_root, event.y_root)
 
@@ -113,7 +113,7 @@ class AmDB(tk.Tk):
                 # The "Add" window is already open
                 add_window.lift()  # Bring the window to the front
                 return
-            
+
             def on_window_close():
                 nonlocal add_window
                 add_window.destroy()
@@ -177,14 +177,13 @@ class AmDB(tk.Tk):
             save_button = tk.Button(add_window, text="Сохранить", command=save_data)
             save_button.pack()
 
-
         def delCommand():
             nonlocal del_window
             if del_window is not None:
                 # The "del" window is already open
                 del_window.lift()  # Bring the window to the front
                 return
-            
+
             def on_window_close():
                 nonlocal del_window
                 del_window.destroy()
@@ -207,7 +206,7 @@ class AmDB(tk.Tk):
                     if len(data) == 0:
                         messagebox.showerror("Error", "No matching records found.")
                         conn.close()
-                        change_window = None
+                        del_window = None
                         return
 
                     # Delete the data from the database based on the name
@@ -236,13 +235,13 @@ class AmDB(tk.Tk):
             del_button = tk.Button(del_window, text="Удалить", command=del_data)
             del_button.pack()
 
-
         def changeCommand():
             nonlocal change_window
             if change_window is not None:
                 # The "change" window is already open
                 change_window.lift()  # Bring the window to the front
                 return
+
             def browse_image():
                 filename = tkinter.filedialog.askopenfilename(filetypes=[("Image Files", "*.png;*.jpg;*.jpeg")])
                 new_image_entry.delete(0, tk.END)
@@ -283,7 +282,7 @@ class AmDB(tk.Tk):
                     # Prepare the SQL statement based on the new values provided
                     update_statement = "UPDATE data SET"
                     params = []
-        
+
                     if new_name:
                         update_statement += " name=?,"
                         params.append(new_name)
@@ -295,15 +294,15 @@ class AmDB(tk.Tk):
                         with open(new_image, 'rb') as file:
                             image_data = file.read()
                         params.append(image_data)
-        
+
                     update_statement = update_statement.rstrip(",") + " WHERE name=?"
                     params.append(name_to_change)
-        
+
                     # Execute the SQL statement with the parameters
                     cursor.execute(update_statement, tuple(params))
                     conn.commit()
                     conn.close()
-        
+
                     messagebox.showinfo("Success", "Data changed successfully.")
                     change_window.destroy()
                     change_window = None
@@ -317,7 +316,8 @@ class AmDB(tk.Tk):
             change_window.title("Изменить информацию")
             change_window.protocol("WM_DELETE_WINDOW", on_window_close)  # Bind window close event
             # Create labels and entry fields for the user to enter data
-            name_to_change_label = tk.Label(change_window, text="Имя химика информацию(должен быть хотя бы один пункт) о котором надо изменить:")
+            name_to_change_label = tk.Label(change_window,
+                                            text="Имя химика информацию(должен быть хотя бы один пункт) о котором надо изменить:")
             name_to_change_label.pack()
             name_to_change_entry = tk.Entry(change_window)
             name_to_change_entry.pack()
@@ -340,13 +340,13 @@ class AmDB(tk.Tk):
             change_button = tk.Button(change_window, text="Изменить", command=change_data)
             change_button.pack()
 
-
         def findCommand():
             nonlocal find_window
             if find_window is not None:
                 # The "change" window is already open
                 find_window.lift()  # Bring the window to the front
                 return
+
             def on_window_close():
                 nonlocal find_window
                 find_window.destroy()
@@ -410,20 +410,22 @@ class AmDB(tk.Tk):
                 # The "change" window is already open
                 show_window.lift()  # Bring the window to the front
                 return
+
             def on_window_close():
                 nonlocal show_window
                 show_window.destroy()
                 show_window = None
+
             show_window = tk.Toplevel(self)
             show_window.title("Справка")
             show_window.protocol("WM_DELETE_WINDOW", on_window_close)  # Bind window close event
             show_label = tk.Label(show_window, text="База данных 'Знаменитые химики России'\n"
-                                            "Позволяет: добавлять, изменять и удалять информацию\n"
-                                            "Клавиши программы:\n"
-                                            "F1-вызов справки по программе\n"
-                                            "F2-добавить в базу данных\n"
-                                            "F3-удалить из базы данных\n"
-                                            "F4-изменить запись в базе данных")
+                                                    "Позволяет: добавлять, изменять и удалять информацию\n"
+                                                    "Клавиши программы:\n"
+                                                    "F1-вызов справки по программе\n"
+                                                    "F2-добавить в базу данных\n"
+                                                    "F3-удалить из базы данных\n"
+                                                    "F4-изменить запись в базе данных")
             show_label.pack()
 
         def showProgramInfo():
